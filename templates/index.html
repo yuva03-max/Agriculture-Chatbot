@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ta">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chisa AI விவசாய சாட்போட்</title>
+    <style>
+        /* Your existing CSS remains the same */
+        
+         :root {
+            --primary-color: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary-color: #ff9800;
+            --background-color: #f5f5f5;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            direction: ltr;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 70vh;
+            background-color: var(--card-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background-color: var(--primary-light);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chat-header span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            color: var(--text-color);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .input-container {
+            display: flex;
+            padding: 15px;
+            background-color: var(--card-color);
+            border-top: 1px solid var(--border-color);
+            gap: 10px;
+        }
+        
+        .input-container input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            outline: none;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .input-container input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e68900;
+        }
+        
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .record-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .record-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .record-btn.recording {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .audio-player {
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 0 15px 15px;
+        }
+        
+        .suggestion {
+            background-color: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 16px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .suggestion:hover {
+            background-color: #c8e6c9;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .status {
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .error {
+            color: #d32f2f;
+            background-color: #ffebee;
+            padding: 10px;
+            border-radius: var(--radius);
+            margin-top: 10px;
+        }
+        /* Responsive design */
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .chat-container {
+                height: 75vh;
+            }
+            .message {
+                max-width: 90%;
+            }
+            .input-container {
+                flex-direction: column;
+            }
+            .input-container input {
+                margin-bottom: 10px;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+        /* Tamil font support */
+        
+        .tamil-text {
+            font-family: 'Arial Unicode MS', 'Nirmala UI', 'Latha', 'Kartika', sans-serif;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🌾chisa AI விவசாய சாட்போட்</h1>
+            <p>தமிழ்நாட்டில் பயிர்கள், வானிலை, பூச்சிகள் மற்றும் விவசாய முறைகள் பற்றி கேளுங்கள்</p>
+        </header>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <span>🤖 விவசாய உதவியாளர்</span>
+                <span id="connection-status">🟢 இணைக்கப்பட்டது</span>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message tamil-text">
+                    வணக்கம்! நான் தமிழ்நாட்டிற்கான உங்கள் விவசாய உதவியாளர். பயிர்கள், வானிலை, பூச்சிகள் மற்றும் விவசாய முறைகள் பற்றிய கேள்விகளுக்கு உதவ முடியும். இன்று நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?
+                    <div class="message-time" id="initial-time"></div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="உங்கள் கேள்வியை இங்கே தட்டச்சு செய்யவும்..." autocomplete="off">
+                <button class="btn btn-primary" id="send-btn">அனுப்பு</button>
+                <button class="record-btn" id="record-btn" title="ஆடியோ பதிவு">
+                    🎤
+                </button>
+            </div>
+
+            <div class="suggestions">
+                <div class="suggestion tamil-text" data-question="தமிழ்நாட்டிற்கு சிறந்த நெல் வகைகள் எவை?">நெல் வகைகள்</div>
+                <div class="suggestion tamil-text" data-question="வாழை சாகுபடியில் பூச்சிகள் கட்டுப்படுத்துவது எப்படி?">வாழை பூச்சிகள்</div>
+                <div class="suggestion tamil-text" data-question="தமிழ்நாட்டில் தற்போதைய கரும்பு விலை என்ன?">கரும்பு விலை</div>
+                <div class="suggestion tamil-text" data-question="தமிழ்நாடு விவசாயிகளுக்கான அரசு திட்டங்கள் பற்றி சொல்லுங்கள்">அரசு திட்டங்கள்</div>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const recordBtn = document.getElementById('record-btn');
+            const status = document.getElementById('status');
+            const connectionStatus = document.getElementById('connection-status');
+            const suggestions = document.querySelectorAll('.suggestion');
+
+            // Set initial time
+            document.getElementById('initial-time').textContent = getCurrentTime();
+
+            // Variables for audio recording
+            let mediaRecorder;
+            let audioChunks = [];
+            let isRecording = false;
+
+            // Event listeners
+            sendBtn.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            recordBtn.addEventListener('click', toggleRecording);
+
+            // Add event listeners to suggestion buttons
+            suggestions.forEach(suggestion => {
+                suggestion.addEventListener('click', function() {
+                    userInput.value = this.getAttribute('data-question');
+                    sendMessage();
+                });
+            });
+
+            // Check server health on load
+            checkServerHealth();
+
+            // Functions
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (!message) {
+                    showError('தயவு செய்து ஒரு கேள்வியை உள்ளிடவும்.');
+                    return;
+                }
+
+                // Disable send button during processing
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = '<div class="loading"></div> அனுப்புகிறது...';
+
+                // Add user message to chat
+                addMessage(message, 'user');
+                userInput.value = '';
+
+                // Show loading indicator
+                const loadingId = addMessage('', 'bot', true);
+
+                // Send to server
+                fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `text=${encodeURIComponent(message)}`
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Server responded with ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Remove loading message
+                        removeMessage(loadingId);
+
+                        if (data.text) {
+                            // Add bot response
+                            addMessage(data.text, 'bot');
+
+                            // Play audio if available
+                            if (data.voice) {
+                                addAudioPlayer(data.voice);
+                            }
+                        } else {
+                            addMessage('மன்னிக்கவும், ஒரு பிழை ஏற்பட்டது. தயவு செய்து மீண்டும் முயற்சிக்கவும்.', 'bot');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        removeMessage(loadingId);
+                        addMessage('மன்னிக்கவும், சர்வருடன் இணைப்பில் சிக்கல் உள்ளது. தயவு செய்து மீண்டும் முயற்சிக்கவும்.', 'bot');
+                        showError('இணைப்பு பிழை. உங்கள் இணைய இணைப்பை சரிபார்க்கவும்.');
+                    })
+                    .finally(() => {
+                        // Re-enable send button
+                        sendBtn.disabled = false;
+                        sendBtn.textContent = 'அனுப்பு';
+                    });
+            }
+
+            function addMessage(text, sender, isLoading = false) {
+                const messageDiv = document.createElement('div');
+                const messageId = 'msg-' + Date.now();
+                messageDiv.id = messageId;
+                messageDiv.className = `message ${sender}-message tamil-text`;
+
+                if (isLoading) {
+                    messageDiv.innerHTML = `<div class="loading"></div> உங்கள் கேள்வி செயலாக்கப்படுகிறது...`;
+                } else {
+                    messageDiv.innerHTML = text.replace(/\n/g, '<br>');
+
+                    // Add timestamp
+                    const timeDiv = document.createElement('div');
+                    timeDiv.className = 'message-time';
+                    timeDiv.textContent = getCurrentTime();
+                    messageDiv.appendChild(timeDiv);
+                }
+
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                return messageId;
+            }
+
+            function removeMessage(id) {
+                const message = document.getElementById(id);
+                if (message) {
+                    message.remove();
+                }
+            }
+
+            function addAudioPlayer(audioUrl) {
+                const audioDiv = document.createElement('div');
+                audioDiv.className = 'audio-player';
+                audioDiv.innerHTML = `
+                    <audio controls style="width: 100%;">
+                        <source src="${audioUrl}" type="audio/mpeg">
+                        உங்கள் உலாவி ஆடியோ உறுப்பை ஆதரிக்காது.
+                    </audio>
+                `;
+                chatMessages.appendChild(audioDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function getCurrentTime() {
+                const now = new Date();
+                return now.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            function showError(message) {
+                status.innerHTML = `<div class="error tamil-text">${message}</div>`;
+                setTimeout(() => {
+                    status.innerHTML = '';
+                }, 5000);
+            }
+
+            function checkServerHealth() {
+                fetch('/health')
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Server not responding');
+                        }
+                    })
+                    .then(data => {
+                        connectionStatus.textContent = '🟢 இணைக்கப்பட்டது';
+                        connectionStatus.style.color = '';
+                    })
+                    .catch(error => {
+                        console.error('Health check failed:', error);
+                        connectionStatus.textContent = '🔴 ஆஃப்லைன்';
+                        connectionStatus.style.color = '#d32f2f';
+                        showError('சர்வர் தற்போது ஆஃப்லைனில் உள்ளது. பிறகு முயற்சிக்கவும்.');
+                    });
+            }
+
+            // Audio recording functionality
+            function toggleRecording() {
+                if (!isRecording) {
+                    startRecording();
+                } else {
+                    stopRecording();
+                }
+            }
+
+            async function startRecording() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            sampleRate: 16000,
+                            channelCount: 1,
+                            echoCancellation: true,
+                            noiseSuppression: true
+                        }
+                    });
+                    mediaRecorder = new MediaRecorder(stream, {
+                        mimeType: 'audio/webm;codecs=opus'
+                    });
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, {
+                            type: 'audio/webm;codecs=opus'
+                        });
+                        sendAudioToServer(audioBlob);
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recordBtn.classList.add('recording');
+                    recordBtn.innerHTML = '⏹️';
+                    status.textContent = 'பதிவு செய்யப்படுகிறது... நிறுத்த மீண்டும் கிளிக் செய்யவும்';
+                } catch (error) {
+                    console.error('Error accessing microphone:', error);
+                    showError('மைக்ரோஃபோன் அணுகல் மறுக்கப்பட்டது. தயவு செய்து மைக்ரோஃபோன் அனுமதிகளை அனுமதிக்கவும்.');
+                }
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && isRecording) {
+                    mediaRecorder.stop();
+                    isRecording = false;
+                    recordBtn.classList.remove('recording');
+                    recordBtn.innerHTML = '🎤';
+                    status.textContent = 'ஆடியோ செயலாக்கப்படுகிறது...';
+                }
+            }
+
+            function sendAudioToServer(audioBlob) {
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.webm');
+
+                // Add user message to chat
+                addMessage('🎤 [ஆடியோ செய்தி]', 'user');
+
+                // Show loading indicator
+                const loadingId = addMessage('', 'bot', true);
+
+                fetch('/chat', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Server responded with ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Remove loading message
+                        removeMessage(loadingId);
+
+                        if (data.text) {
+                            // Add bot response
+                            addMessage(data.text, 'bot');
+
+                            // Play audio if available
+                            if (data.voice) {
+                                addAudioPlayer(data.voice);
+                            }
+                        } else {
+                            addMessage('மன்னிக்கவும், உங்கள் ஆடியோவை செயலாக்குவதில் பிழை ஏற்பட்டது. தயவு செய்து மீண்டும் முயற்சிக்கவும்.', 'bot');
+                        }
+
+                        status.textContent = '';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        removeMessage(loadingId);
+                        addMessage('மன்னிக்கவும், உங்கள் ஆடியோவை செயலாக்குவதில் சிக்கல் ஏற்பட்டது. தயவு செய்து மீண்டும் முயற்சிக்கவும்.', 'bot');
+                        showError('ஆடியோ செயலாக்கம் தோல்வியடைந்தது. தயவு செய்து மீண்டும் முயற்சிக்கவும்.');
+                        status.textContent = '';
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>
